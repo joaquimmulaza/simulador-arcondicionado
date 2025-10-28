@@ -12,11 +12,41 @@ const Calculator = () => {
   const [incidenciaSolar, setIncidenciaSolar] = useState('');
   const [aparelhos, setAparelhos] = useState(0);
   const [btus, setBtus] = useState(0);
+  const [errors, setErrors] = useState({
+    area: '',
+    pessoas: '',
+    incidenciaSolar: '',
+  });
+
+  const validate = () => {
+    const newErrors = { area: '', pessoas: '', incidenciaSolar: '' };
+    let isValid = true;
+
+    if (area <= 0) {
+      newErrors.area = 'A área deve ser maior que zero.';
+      isValid = false;
+    }
+    if (pessoas <= 0) {
+      newErrors.pessoas = 'O número de pessoas deve ser de no mínimo 1.';
+      isValid = false;
+    }
+    if (incidenciaSolar === '') {
+      newErrors.incidenciaSolar = 'Selecione a incidência solar.';
+      isValid = false;
+    }
+
+    setErrors(newErrors);
+    return isValid;
+  };
 
   const calcularBTUs = (e: React.FormEvent) => {
     e.preventDefault();
-    let totalBTUs = 0;
+    if (!validate()) {
+      setBtus(0);
+      return;
+    }
 
+    let totalBTUs = 0;
     totalBTUs += area * 600;
     if (pessoas > 1) {
       totalBTUs += (pessoas - 1) * 600;
@@ -27,6 +57,11 @@ const Calculator = () => {
     totalBTUs += aparelhos * 600;
 
     setBtus(totalBTUs);
+  };
+
+  const handleInputChange = <T,>(setter: React.Dispatch<React.SetStateAction<T>>, value: T) => {
+    setter(value);
+    setBtus(0);
   };
 
   return (
@@ -48,8 +83,9 @@ const Calculator = () => {
               type="number"
               id="area"
               value={area}
-              onChange={(e) => setArea(Number(e.target.value))}
+              onChange={(e) => handleInputChange(setArea, Number(e.target.value))}
             />
+            {errors.area && <p className="text-red-500 text-sm mt-1">{errors.area}</p>}
           </div>
           <div className="space-y-2">
             <Label htmlFor="pessoas" className="flex items-center text-foreground">
@@ -60,8 +96,9 @@ const Calculator = () => {
               type="number"
               id="pessoas"
               value={pessoas}
-              onChange={(e) => setPessoas(Number(e.target.value))}
+              onChange={(e) => handleInputChange(setPessoas, Number(e.target.value))}
             />
+            {errors.pessoas && <p className="text-red-500 text-sm mt-1">{errors.pessoas}</p>}
           </div>
           <div className="space-y-2">
             <Label className="flex items-center text-foreground">
@@ -69,7 +106,7 @@ const Calculator = () => {
               Incidência solar
             </Label>
             <RadioGroup
-              onValueChange={setIncidenciaSolar}
+              onValueChange={(value) => handleInputChange(setIncidenciaSolar, value)}
               className="flex items-center space-x-4"
             >
               <div className="flex items-center space-x-2">
@@ -85,6 +122,7 @@ const Calculator = () => {
                 <Label htmlFor="sol-dia-todo">Dia todo</Label>
               </div>
             </RadioGroup>
+            {errors.incidenciaSolar && <p className="text-red-500 text-sm mt-1">{errors.incidenciaSolar}</p>}
           </div>
           <div className="space-y-2">
             <Label htmlFor="aparelhos" className="flex items-center text-foreground">
@@ -95,7 +133,7 @@ const Calculator = () => {
               type="number"
               id="aparelhos"
               value={aparelhos}
-              onChange={(e) => setAparelhos(Number(e.target.value))}
+              onChange={(e) => handleInputChange(setAparelhos, Number(e.target.value))}
             />
           </div>
           <Button type="submit" className="w-full">
