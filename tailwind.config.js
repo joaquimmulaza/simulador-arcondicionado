@@ -58,6 +58,7 @@ export default {
         's-teal': '#03A696',
         's-lime': '#B1BF49',
         's-gray': '#878786',
+        's-green': '#CDCC00',
       },
       borderRadius: {
         lg: "var(--radius)",
