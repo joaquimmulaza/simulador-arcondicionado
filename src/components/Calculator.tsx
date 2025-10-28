@@ -52,7 +52,7 @@ const CalculatorComponent = () => {
       isValid = false;
     }
     if (incidenciaSolar === '') {
-      newErrors.incidenciaSolar = 'Selecione a incidência solar.';
+      newErrors.incidenciaSolar = 'Selecione a exposição solar.';
       isValid = false;
     }
 
@@ -245,7 +245,7 @@ const CalculatorComponent = () => {
             <div className="space-y-3">
               <Label className="flex items-center text-gray-700">
                 <Sun className="mr-2 h-4 w-4 text-cyan-600" />
-                Incidência solar no ambiente
+                Exposição solar no ambiente
               </Label>
               <RadioGroup
                 value={incidenciaSolar}
