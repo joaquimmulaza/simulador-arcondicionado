@@ -33,6 +33,9 @@
     --ring: 195 96% 38%; /* #049DBF */
 
     --radius: 0.5rem;
+
+    --s-green: #CDCC00;
+    --s-blue: #009ac1;
   }
 
   .dark {

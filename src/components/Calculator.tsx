@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
+import axios from 'axios';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
-import { Ruler, Users, Sun, Tv, Calculator, Thermometer, Maximize2, Square } from 'lucide-react';
+import { Ruler, Users, Sun, Tv, Calculator, Thermometer, Maximize2, Square, Info } from 'lucide-react';
+import { Spinner } from '@/components/ui/spinner';
 
 const CalculatorComponent = () => {
   const [comprimento, setComprimento] = useState('');
@@ -14,26 +16,16 @@ const CalculatorComponent = () => {
   const [aparelhos, setAparelhos] = useState('');
   const [janelas, setJanelas] = useState('');
   const [resultado, setResultado] = useState<{
-    btuCalculado: number;
     btuComercial: number;
-    area: number;
+    recomendacao: string;
   } | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState({
     comprimento: '',
     largura: '',
     pessoas: '',
     incidenciaSolar: '',
   });
-
-  const capacidadesComerciais = [
-    7000, 7500, 9000, 10000, 12000, 14000, 15000, 
-    18000, 21000, 22000, 24000, 30000, 36000, 48000, 60000
-  ];
-
-  const encontrarCapacidadeComercial = (btuCalculado: number) => {
-    const capacidade = capacidadesComerciais.find(cap => cap >= btuCalculado);
-    return capacidade || capacidadesComerciais[capacidadesComerciais.length - 1];
-  };
 
   const validate = () => {
     const newErrors = { comprimento: '', largura: '', pessoas: '', incidenciaSolar: '' };
@@ -60,60 +52,57 @@ const CalculatorComponent = () => {
     return isValid;
   };
 
-  const calcularBTUs = (e: React.FormEvent) => {
+  const calcularBTUs = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) {
       setResultado(null);
       return;
     }
 
-    const comp = Number(comprimento);
-    const larg = Number(largura);
-    const area = comp * larg;
-    const numPessoas = Number(pessoas) || 1;
-    const numAparelhos = Number(aparelhos) || 0;
-    const numJanelas = Number(janelas) || 0;
+    setIsLoading(true);
+    setResultado(null);
 
-    let totalBTUs = area * 600;
+    const prompt = `
+      Calcule a capacidade de BTUs para um ar condicionado com as seguintes características:
+      - Comprimento do ambiente: ${comprimento} metros
+      - Largura do ambiente: ${largura} metros
+      - Área total: ${Number(comprimento) * Number(largura)} m²
+      - Número de pessoas: ${pessoas}
+      - Número de aparelhos eletrônicos: ${aparelhos}
+      - Número de janelas: ${janelas}
+      - Incidência solar: ${incidenciaSolar}
 
-    if (numPessoas > 1) {
-      totalBTUs += (numPessoas - 1) * 600;
+      Responda em formato JSON com duas chaves:
+      1. "btuComercial": um número para a capacidade de BTUs comercial recomendada (ex: 9000, 12000, 18000, 24000, 30000).
+      2. "recomendacao": uma string curta (máximo 2 frases) com uma recomendação ou observação baseada nos dados.
+    `;
+
+    try {
+      const response = await axios.post(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${import.meta.env.VITE_GEMINI_API_KEY}`,
+        {
+          contents: [{
+            parts: [{ text: prompt }]
+          }]
+        }
+      );
+
+      const textResponse = response.data.candidates[0].content.parts[0].text;
+      const cleanedJsonString = textResponse.replace(/```json|```/g, '').trim();
+      const data = JSON.parse(cleanedJsonString);
+
+      setResultado({
+        btuComercial: data.btuComercial,
+        recomendacao: data.recomendacao,
+      });
+
+    } catch (error) {
+      console.error("Erro ao chamar a API do Gemini:", error);
+      // Fallback ou mensagem de erro para o usuário
+      setErrors(prev => ({ ...prev, api: 'Não foi possível obter a recomendação. Tente novamente.' }));
+    } finally {
+      setIsLoading(false);
     }
-
-    let fatorInsolacao = 1.0;
-    switch (incidenciaSolar) {
-      case 'sem-sol':
-        fatorInsolacao = 1.0;
-        break;
-      case 'pouco-sol':
-        fatorInsolacao = 1.05;
-        break;
-      case 'manha':
-        fatorInsolacao = 1.10;
-        break;
-      case 'tarde':
-        fatorInsolacao = 1.15;
-        break;
-      case 'dia-todo':
-        fatorInsolacao = 1.20;
-        break;
-    }
-    totalBTUs *= fatorInsolacao;
-
-    if (numJanelas > 0) {
-      const btuPorJanela = incidenciaSolar === 'tarde' || incidenciaSolar === 'dia-todo' ? 1000 : 600;
-      totalBTUs += numJanelas * btuPorJanela;
-    }
-
-    totalBTUs += numAparelhos * 600;
-
-    const btuComercial = encontrarCapacidadeComercial(Math.round(totalBTUs));
-
-    setResultado({
-      btuCalculado: Math.round(totalBTUs),
-      btuComercial: btuComercial,
-      area: area
-    });
   };
 
   const handleInputChange = <T,>(setter: React.Dispatch<React.SetStateAction<T>>, value: T) => {
@@ -252,20 +241,20 @@ const CalculatorComponent = () => {
                 onValueChange={(value) => handleInputChange(setIncidenciaSolar, value)}
                 className="grid grid-cols-1 sm:grid-cols-3 gap-3"
               >
-                <div className="flex items-center justify-center space-x-2 bg-white p-3 rounded-md border border-gray-200 hover:border-cyan-400 transition-colors">
+                <div className="flex items-center justify-center space-x-2 bg-white p-3 rounded-md border border-gray-200 hover:border-s-blue transition-colors">
                   <RadioGroupItem value="sem-sol" id="sem-sol" />
                   <Label htmlFor="sem-sol" className="cursor-pointer">
                     <span className="font-medium">Sem sol</span>
                     
                   </Label>
                 </div>
-                <div className="flex items-center justify-center space-x-2 bg-white p-3 rounded-md border border-gray-200 hover:border-cyan-400 transition-colors">
+                <div className="flex items-center justify-center space-x-2 bg-white p-3 rounded-md border border-gray-200 hover:border-s-blue transition-colors">
                   <RadioGroupItem value="pouco-sol" id="pouco-sol" />
                   <Label htmlFor="pouco-sol" className="cursor-pointer">
                     <span className="font-medium">Pouco sol</span>
                   </Label>
                 </div>
-                <div className="flex items-center justify-center space-x-2 bg-white p-3 rounded-md border border-gray-200 hover:border-cyan-400 transition-colors">
+                <div className="flex items-center justify-center space-x-2 bg-white p-3 rounded-md border border-gray-200 hover:border-s-blue transition-colors">
                   <RadioGroupItem value="dia-todo" id="sol-dia-todo" />
                   <Label htmlFor="sol-dia-todo" className="cursor-pointer">
                     <span className="font-medium">Sol intenso</span>
@@ -278,22 +267,29 @@ const CalculatorComponent = () => {
 
           <Button 
             onClick={calcularBTUs} 
+            disabled={isLoading}
             className="w-full bg-cyan-600 hover:bg-cyan-700 text-white h-12 text-base font-semibold"
           >
-            <Calculator className="mr-2 h-5 w-5" />
-            Calcular
+            <Calculator className="mr-2 h-5 w-5" /> Calcular
           </Button>
         </div>
 
-        {resultado && (
+        {isLoading && (
+          <div className="text-center mt-8">
+            <Spinner />
+            <p className="text-gray-600 mt-2">Aguarde, estamos consultando a melhor opção para você...</p>
+          </div>
+        )}
+
+        {resultado && !isLoading && (
           <motion.div
-            key={resultado.btuCalculado}
+            key={resultado.btuComercial}
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.4 }}
             className="mt-8 space-y-4"
           >
-            <div className="bg-gradient-to-r from-s-green to-s-blue p-6 rounded-xl text-white shadow-lg">
+            <div className="bg-gradient-to-r from-s-green to-s-blue p-6 rounded-xl text-white shadow-lg text-center">
               <p className="text-sm font-medium opacity-90 mb-2">Capacidade Recomendada</p>
               <div className="flex items-center justify-center gap-3">
                 <Thermometer className="h-10 w-10" />
@@ -302,14 +298,11 @@ const CalculatorComponent = () => {
               </div>
             </div>
 
-            <div className="bg-amber-50 border border-amber-200 p-4 rounded-lg">
-              <h4 className="font-semibold text-amber-900 mb-2 flex items-center">
-                <span className="mr-2">⚠️</span> Observações Importantes
+            <div className="bg-sky-50 border border-sky-200 p-4 rounded-lg">
+              <h4 className="font-semibold text-sky-900 mb-2 flex items-center">
+                <Info className="mr-2 h-5 w-5" /> Informação Adicional
               </h4>
-              <ul className="text-sm text-amber-800 space-y-1 ml-6 list-disc">
-                <li>Este cálculo é uma estimativa baseada em padrões da indústria</li>
-                <li>Consulte um profissional para ambientes com características especiais</li>
-              </ul>
+              <p className="text-sm text-sky-800">{resultado.recomendacao}</p>
             </div>
           </motion.div>
         )}
