@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
-import { Ruler, Users, Sun, Tv, Calculator, Thermometer, Maximize2, Square, Sparkles } from 'lucide-react';
+import { Ruler, Users, Sun, Tv, Calculator, Thermometer, Maximize2, Square, Sparkles, MessageCircle } from 'lucide-react';
 import { Spinner } from '@/components/ui/spinner';
 import logoSoclima from '@/assets/logo-soclima.png';
 
@@ -109,6 +109,15 @@ const CalculatorComponent = () => {
   const handleInputChange = <T,>(setter: React.Dispatch<React.SetStateAction<T>>, value: T) => {
     setter(value);
     setResultado(null);
+  };
+
+  const handlePedirCotacao = () => {
+    if (resultado) {
+      const numeroWhatsapp = '923447087';
+      const mensagem = `Olá, gostaria de pedir uma cotação para um ar condicionado com capacidade de ${resultado.btuComercial.toLocaleString('pt-BR')} BTUs.`;
+      const url = `https://wa.me/${numeroWhatsapp}?text=${encodeURIComponent(mensagem)}`;
+      window.open(url, '_blank');
+    }
   };
 
   return (
@@ -305,8 +314,15 @@ const CalculatorComponent = () => {
                 <Sparkles className="mr-2 h-5 w-5" fill="currentColor" /> Informação Adicional
               </h4>
               <p className="text-sm text-sky-800">{resultado.recomendacao}</p>
-              
             </div>
+
+            <Button
+              onClick={handlePedirCotacao}
+              className="w-full bg-green-600 hover:bg-green-700 text-white h-12 text-base font-semibold mt-4"
+            >
+              <MessageCircle className="mr-2 h-5 w-5" /> Pedir Cotação
+            </Button>
+
             <p className='text-gray-400 text-xs'>Informação gerada por IA com base em fórmulas e métodos de cálculo padrão. Recomenda-se validação técnica independente.</p>
           </motion.div>
         )}
