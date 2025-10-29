@@ -8,7 +8,6 @@ import { Label } from '@/components/ui/label';
 import { Ruler, Users, Sun, Tv, Calculator, Thermometer, Maximize2, Square, Sparkles } from 'lucide-react';
 import { Spinner } from '@/components/ui/spinner';
 import logoSoclima from '@/assets/logo-soclima.png';
-import whatsappIcon from '@/assets/whatsapp-icon.svg';
 
 const CalculatorComponent = () => {
   const [comprimento, setComprimento] = useState('');
