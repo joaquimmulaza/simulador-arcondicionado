@@ -7,6 +7,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { Ruler, Users, Sun, Tv, Calculator, Thermometer, Maximize2, Square, Sparkles } from 'lucide-react';
 import { Spinner } from '@/components/ui/spinner';
+import logoSoclima from '@/assets/logo-soclima.png';
 
 const CalculatorComponent = () => {
   const [comprimento, setComprimento] = useState('');
@@ -119,7 +120,8 @@ const CalculatorComponent = () => {
         className="bg-white p-8 rounded-xl shadow-2xl w-full max-w-2xl"
       >
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">Calculadora de BTUs</h1>
+          <img src={logoSoclima} alt="Soclima Logo" className="mx-auto mb-4 h-16" />
+          <h1 className="text-3xl font-bold text-gray-700 mb-2">Calculadora de BTUs</h1>
         </div>
 
         <div className="space-y-6">
