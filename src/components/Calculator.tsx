@@ -279,7 +279,7 @@ const CalculatorComponent = () => {
         {isLoading && (
           <div className="text-center mt-8">
             <Spinner />
-            <p className="text-gray-600 mt-2">Só um momento - estamos a encontrar a melhor solução pra você.</p>
+            <p className="text-gray-600 mt-2">Só um momento, estamos a encontrar a melhor solução para si.</p>
           </div>
         )}
 
