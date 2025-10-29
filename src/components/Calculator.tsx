@@ -5,14 +5,14 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
-import { Ruler, Users, Sun, Tv, Calculator, Thermometer, Maximize2, Square, Info } from 'lucide-react';
+import { Ruler, Users, Sun, Tv, Calculator, Thermometer, Maximize2, Square, Sparkles } from 'lucide-react';
 import { Spinner } from '@/components/ui/spinner';
 
 const CalculatorComponent = () => {
   const [comprimento, setComprimento] = useState('');
   const [largura, setLargura] = useState('');
   const [pessoas, setPessoas] = useState('');
-  const [incidenciaSolar, setIncidenciaSolar] = useState('');
+  const [exposicaoSolar, setExposicaoSolar] = useState('');
   const [aparelhos, setAparelhos] = useState('');
   const [janelas, setJanelas] = useState('');
   const [resultado, setResultado] = useState<{
@@ -24,11 +24,11 @@ const CalculatorComponent = () => {
     comprimento: '',
     largura: '',
     pessoas: '',
-    incidenciaSolar: '',
+    exposicaoSolar: '',
   });
 
   const validate = () => {
-    const newErrors = { comprimento: '', largura: '', pessoas: '', incidenciaSolar: '' };
+    const newErrors = { comprimento: '', largura: '', pessoas: '', exposicaoSolar: '' };
     let isValid = true;
 
     if (!comprimento || Number(comprimento) <= 0) {
@@ -43,8 +43,8 @@ const CalculatorComponent = () => {
       newErrors.pessoas = 'O número de pessoas deve ser no mínimo 1.';
       isValid = false;
     }
-    if (incidenciaSolar === '') {
-      newErrors.incidenciaSolar = 'Selecione a exposição solar.';
+    if (exposicaoSolar === '') {
+      newErrors.exposicaoSolar = 'Selecione a exposição solar.';
       isValid = false;
     }
 
@@ -70,9 +70,9 @@ const CalculatorComponent = () => {
       - Número de pessoas: ${pessoas}
       - Número de aparelhos eletrônicos: ${aparelhos}
       - Número de janelas: ${janelas}
-      - Incidência solar: ${incidenciaSolar}
+      - Exposição solar: ${exposicaoSolar}
 
-      Responda em formato JSON com duas chaves:
+      Responda em Português de Portugal e em formato JSON com duas chaves:
       1. "btuComercial": um número para a capacidade de BTUs comercial recomendada (ex: 9000, 12000, 18000, 24000, 30000).
       2. "recomendacao": uma string curta (máximo 2 frases) com uma recomendação ou observação baseada nos dados.
     `;
@@ -237,8 +237,8 @@ const CalculatorComponent = () => {
                 Exposição solar no ambiente
               </Label>
               <RadioGroup
-                value={incidenciaSolar}
-                onValueChange={(value) => handleInputChange(setIncidenciaSolar, value)}
+                value={exposicaoSolar}
+                onValueChange={(value) => handleInputChange(setExposicaoSolar, value)}
                 className="grid grid-cols-1 sm:grid-cols-3 gap-3"
               >
                 <div className="flex items-center justify-center space-x-2 bg-white p-3 rounded-md border border-gray-200 hover:border-s-blue transition-colors">
@@ -261,7 +261,7 @@ const CalculatorComponent = () => {
                   </Label>
                 </div>
               </RadioGroup>
-              {errors.incidenciaSolar && <p className="text-red-500 text-sm mt-1">{errors.incidenciaSolar}</p>}
+              {errors.exposicaoSolar && <p className="text-red-500 text-sm mt-1">{errors.exposicaoSolar}</p>}
             </div>
           </div>
 
@@ -277,7 +277,7 @@ const CalculatorComponent = () => {
         {isLoading && (
           <div className="text-center mt-8">
             <Spinner />
-            <p className="text-gray-600 mt-2">Aguarde, estamos consultando a melhor opção para você...</p>
+            <p className="text-gray-600 mt-2">Só um momento - estamos a encontrar a melhor solução pra você.</p>
           </div>
         )}
 
@@ -300,10 +300,12 @@ const CalculatorComponent = () => {
 
             <div className="bg-sky-50 border border-sky-200 p-4 rounded-lg">
               <h4 className="font-semibold text-sky-900 mb-2 flex items-center">
-                <Info className="mr-2 h-5 w-5" /> Informação Adicional
+                <Sparkles className="mr-2 h-5 w-5" fill="currentColor" /> Informação Adicional
               </h4>
               <p className="text-sm text-sky-800">{resultado.recomendacao}</p>
+              
             </div>
+            <p className='text-gray-400 text-xs'>Informação gerada por IA com base em fórmulas e métodos de cálculo padrão. Recomenda-se validação técnica independente.</p>
           </motion.div>
         )}
       </motion.div>
