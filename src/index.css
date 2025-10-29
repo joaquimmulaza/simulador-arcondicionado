@@ -42,3 +42,8 @@
     /* Cores para o modo escuro podem ser definidas aqui */
   }
 }
+
+.noHover:hover{
+  background-color: #fff;
+  color: #25D366;
+}
