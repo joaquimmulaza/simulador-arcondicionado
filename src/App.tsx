@@ -33,7 +33,7 @@ function App() {
   return (
     <main className="flex min-h-screen w-full bg-white">
       {/* Coluna da Imagem (Esquerda) */}
-      <div className="hidden lg:block lg:w-1/2 relative h-screen sticky top-0">
+      <div className="hidden bg-gradient-to-br from-s-cyan to-s-blue lg:block lg:w-1/2 relative h-screen sticky top-0">
         <AnimatePresence>
           <motion.div
             key={currentImage}
