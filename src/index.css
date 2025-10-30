@@ -47,3 +47,8 @@
   background-color: #fff;
   color: #25D366;
 }
+
+.noHoverMail:hover{
+  background-color: #fff;
+  color: #009ac1;
+}
