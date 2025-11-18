@@ -3,12 +3,12 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Calculator from './components/Calculator';
 
 // Importar todas as imagens para pré-carregamento
-import standardImg from './assets/standard-img.png';
-import btu9000 from './assets/btu-9000.png';
-import btu12000 from './assets/btu-12000.png';
-import btu18000 from './assets/btu-18000.png';
-import btu24000 from './assets/btu-24000.png';
-import btu30000 from './assets/btu-30000.png';
+import standardImg from './assets/standard-img.webp';
+import btu9000 from './assets/btu-9000.webp';
+import btu12000 from './assets/btu-12000.webp';
+import btu18000 from './assets/btu-18000.webp';
+import btu24000 from './assets/btu-24000.webp';
+import btu30000 from './assets/btu-30000.webp';
 
 // Mapeamento de BTU para a imagem correspondente
 const btuImageMap: { [key: number]: string } = {
